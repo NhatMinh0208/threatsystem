@@ -492,14 +492,14 @@ end
 
 local function resetAllWantedLevel(ply, cmd, args)
     if ply:EntIndex() ~= 0 and not ply:IsSuperAdmin() then return end
-    MySQLite.query("UPDATE darkrp_player SET wlevel = " .. "0" .. " ;")
+    MySQLite.query("UPDATE darkrp_player SET wlevel = " .. GAMEMODE.Config.defaultwantedlevel .. " ;")
     for _, v in ipairs(player.GetAll()) do
-        v:setDarkRPVar("wantedLevel", 0)
+        v:setDarkRPVar("wantedLevel", GAMEMODE.Config.defaultwantedlevel)
     end
     if ply:IsPlayer() then
-        DarkRP.notifyAll(0, 4, ply:Nick() .. " has reset all players' wanted level!")
+        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_wantedlevel", ply:Nick()))
     else
-        DarkRP.notifyAll(0, 4, "Console" .. " has reset all players' wanted level!")
+        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_wantedlevel", "Console"))
     end
 end
 concommand.Add("rp_resetallwantedlevel", resetAllWantedLevel)
@@ -539,7 +539,7 @@ function meta:restorePlayerData()
 
         info.wallet = info.wallet or GAMEMODE.Config.startingmoney
         info.salary = DarkRP.retrieveSalary(self)
-        info.wlevel = info.wlevel or 0
+        info.wlevel = info.wlevel or GAMEMODE.Config.defaultwantedlevel
 
         self:setDarkRPVar("money", tonumber(info.wallet))
         self:setSelfDarkRPVar("salary", tonumber(info.salary))
@@ -556,7 +556,7 @@ function meta:restorePlayerData()
         self.DarkRPUnInitialized = true -- no information should be saved from here, or the playerdata might be reset
 
         self:setDarkRPVar("money", GAMEMODE.Config.startingmoney)
-        self:setDarkRPVar("wantedLevel", 0)
+        self:setDarkRPVar("wantedLevel", GAMEMODE.Config.defaultwantedlevel)
         self:setSelfDarkRPVar("salary", DarkRP.retrieveSalary(self))
         local name = string.gsub(self:SteamName(), "\\\"", "\"")
         self:setDarkRPVar("rpname", name)

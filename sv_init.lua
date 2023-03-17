@@ -13,7 +13,7 @@ DarkRP.defineChatCommand("setwantedlevel", function(ply, args)
     ply:setWantedLevel(level)
     level = ply:getWantedLevel()
 
-    DarkRP.notify(ply, 2, 5, "Your wanted level has been set to: " .. tostring(level))
+    DarkRP.notify(ply, 2, 5, DarkRP.getPhrase("wanted_level_set", level))
 
     return ""
 end)
@@ -21,7 +21,7 @@ end)
 DarkRP.defineChatCommand("getwantedlevel", function(ply, args)
     level = ply:getWantedLevel()
 
-    DarkRP.notify(ply, 2, 5, "Your wanted level is: " .. tostring(level))
+    DarkRP.notify(ply, 2, 5, DarkRP.getPhrase("wanted_level_get", level))
 
     return ""
 end)
