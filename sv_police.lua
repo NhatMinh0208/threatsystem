@@ -339,6 +339,9 @@ end
 
 function DarkRP.hooks:playerArrested(ply, time, arrester)
     if ply:isWanted() then ply:unWanted(arrester) end
+    
+    timer.Remove(ply:SteamID64() .. "threatdecay")
+
     local job = RPExtraTeams[ply:Team()]
     if not job or not job.hasLicense then
         ply:setDarkRPVar("HasGunlicense", nil)

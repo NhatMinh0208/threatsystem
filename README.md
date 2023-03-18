@@ -6,6 +6,6 @@ First install the [DarkRP modification addon](https://github.com/FPtje/darkrpmod
 
 Then clone this repo to `garrysmod/addons/darkrpmodification/lua/darkrp_modules`.
 
-Copy the `english.lua` file to `garrysmod/addons/darkrpmodification/lua/darkrp_language`.
+Add the translations in `english.lua` to `garrysmod/addons/darkrpmodification/lua/darkrp_language/english.lua`.
 
 Add the addon-specific settings in `settings.lua` to `garrysmod/addons/darkrpmodification/lua/darkrp_config/settings.lua`.

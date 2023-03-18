@@ -4,6 +4,14 @@ function plyMeta:setThreatLevel(level)
     if not(level >= 0 and level <= GAMEMODE.Config.maxthreatlevel) then
         self:setDarkRPVar("threatLevel", level)
         DarkRP.storeThreatLevel(self, level)
+        -- implement threat level decay
+        if (level > 0)
+            timer.Remove(self:SteamID64() .. "threatdecay")
+            timer.Create(self:SteamID64() .. "threatdecay", GAMEMODE.Config.threatdecaytime, 1, function()
+                self:setThreatLevel(level - 1)
+                DarkRP.notify(self, 2, 5, DarkRP.getPhrase("threat_level_decrease", level))
+            end)
+        end
     end
 end
 
