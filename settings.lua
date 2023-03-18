@@ -17,5 +17,5 @@ GM.Config.needwantedorthreat = false
 GM.Config.additionaljailtime = 10
 -- If true, automatically jails the player if they log in while having a threat level.
 GM.Config.jailthreatonlogin = true
--- If true, automatically jails the player if they are killed.
+-- If true, automatically jails the player if they are killed while having a threat level.
 GM.Config.jailthreatondeath = true
