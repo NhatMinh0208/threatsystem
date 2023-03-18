@@ -38,7 +38,7 @@ local my_language = {
     price = "Price: %s%d",
     priceTag = "Price: %s",
     reset_money = "%s has reset all players' money!",
-    reset_wantedlevel = "%s has reset all players' wanted level!",
+    reset_threatlevel = "%s has reset all players' threat level!",
     has_given = "%s has given you %s",
     you_gave = "You gave %s %s",
     npc_killpay = "%s for killing an NPC!",
@@ -269,8 +269,8 @@ local my_language = {
 
     -- Notifies
 
-    wanted_level_set = "Your wanted level has been set to: %s"
-    wanted_level_get = "Your wanted level is: %s"
+    threat_level_set = "Your threat level has been set to: %s"
+    threat_level_get = "Your threat level is: %s"
 
     disabled = "%s has been disabled! %s",
     gm_spawnvehicle = "spawn vehicles",

@@ -1,7 +1,9 @@
 --[[---------------------------------------------------------------------------
-Wanted Levels module
+Threat System module
 ---------------------------------------------------------------------------]]
--- The default wanted level.
-GM.Config.defaultwantedlevel = 0
--- How many seconds should be added to jail time per wanted level.
-GM.Config.additionaljailtime = 0
+-- The default threat level.
+GM.Config.defaultthreatlevel = 0
+-- The maximum threat level
+GM.Config.maxthreatlevel = 5
+-- How many seconds should be added to jail time per threat level.
+GM.Config.additionaljailtime = 10

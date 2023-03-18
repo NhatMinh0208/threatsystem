@@ -62,7 +62,7 @@ function DarkRP.initDatabase()
                 rpname VARCHAR(45),
                 salary INTEGER NOT NULL DEFAULT 45,
                 wallet BIGINT NOT NULL,
-                wlevel INTEGER NOT NULL DEFAULT 0
+                tlevel INTEGER NOT NULL DEFAULT 0
             ) ]] .. ENGINE_INNODB .. [[;
         ]])
 
@@ -137,7 +137,7 @@ function DarkRP.initDatabase()
                         v:setDarkRPVar("rpname", Data.rpname)
                         v:setSelfDarkRPVar("salary", Data.salary)
                         v:setDarkRPVar("money", Data.wallet)
-                        v:setDarkRPVar("wantedLevel", Data.wlevel)
+                        v:setDarkRPVar("threatLevel", Data.tlevel)
                     end)
                 end
             end
@@ -289,9 +289,9 @@ function migrateDB(callback)
         end
 
         
-        if version < 20230317 then
+        if version < 20230318 then
             MySQLite.begin()
-            -- add the wlevel field
+            -- add the tlevel field
             MySQLite.queueQuery([[PRAGMA foreign_keys=OFF]])
 
             MySQLite.queueQuery([[
@@ -300,7 +300,7 @@ function migrateDB(callback)
                     rpname VARCHAR(45),
                     salary INTEGER NOT NULL DEFAULT 45,
                     wallet BIGINT NOT NULL,
-                    wlevel INTEGER NOT NULL DEFAULT 0
+                    tlevel INTEGER NOT NULL DEFAULT 0
                 );
             ]])
 
@@ -347,13 +347,13 @@ function DarkRP.offlinePlayerData(steamid, callback, failed)
     MySQLite.query(string.format([[REPLACE INTO playerinformation VALUES(%s, %s);]], MySQLite.SQLStr(sid64), MySQLite.SQLStr(steamid)), nil, failed)
 
     local query = [[
-    SELECT rpname, wallet, salary, wlevel, "SID64" AS kind
+    SELECT rpname, wallet, salary, tlevel, "SID64" AS kind
     FROM darkrp_player
     where uid = %s
 
     UNION
 
-    SELECT rpname, wallet, salary, wlevel, "UniqueID" AS kind
+    SELECT rpname, wallet, salary, tlevel, "UniqueID" AS kind
     FROM darkrp_player
     where uid = %s
     ;
@@ -369,7 +369,7 @@ function DarkRP.offlinePlayerData(steamid, callback, failed)
                 -- adding a new row with uid = SteamID64, but the same rpname will remove the uid=UniqueID row
 
                 local replquery = [[
-                REPLACE INTO darkrp_player(uid, rpname, wallet, salary, wlevel)
+                REPLACE INTO darkrp_player(uid, rpname, wallet, salary, tlevel)
                 VALUES (%s, %s, %s, %s, %s)
                 ]]
 
@@ -380,7 +380,7 @@ function DarkRP.offlinePlayerData(steamid, callback, failed)
                         data[1].rpname == "NULL" and "NULL" or MySQLite.SQLStr(data[1].rpname),
                         data[1].wallet,
                         data[1].salary,
-                        data[1].wlevel
+                        data[1].tlevel
                         ),
                     nil,
                     failed
@@ -406,13 +406,13 @@ function DarkRP.retrievePlayerData(ply, callback, failed, attempts, err)
     end)
 end
 
-function DarkRP.createPlayerData(ply, name, wallet, salary, wlevel)
+function DarkRP.createPlayerData(ply, name, wallet, salary, tlevel)
     MySQLite.query([[REPLACE INTO darkrp_player VALUES(]] ..
             ply:SteamID64() .. [[, ]] ..
             MySQLite.SQLStr(name)  .. [[, ]] ..
             salary  .. [[, ]] ..
             wallet  .. [[, ]] ..
-            wlevel .. ");")
+            tlevel .. ");")
 
     -- Backwards compatibility
     MySQLite.query([[REPLACE INTO darkrp_player VALUES(]] ..
@@ -420,7 +420,7 @@ function DarkRP.createPlayerData(ply, name, wallet, salary, wlevel)
             MySQLite.SQLStr(name)  .. [[, ]] ..
             salary  .. [[, ]] ..
             wallet  .. [[, ]] ..
-            wlevel .. ");")
+            tlevel .. ");")
 end
 
 function DarkRP.storeMoney(ply, amount)
@@ -463,46 +463,46 @@ end
 concommand.Add("rp_resetallmoney", resetAllMoney)
 
 
--- just gonna shamelessly reuse the above part for wantedLevel
+-- just gonna shamelessly reuse the above part for threatLevel
 
-function DarkRP.storeWantedLevel(ply, level)
+function DarkRP.storeThreatLevel(ply, level)
     if not isnumber(level) or level < 0 or level >= 1 / 0 then return end
 
     -- Also keep deprecated UniqueID data at least somewhat up to date
-    MySQLite.query([[UPDATE darkrp_player SET wlevel = ]] .. level .. [[ WHERE uid = ]] .. ply:UniqueID() .. [[ OR uid = ]] .. ply:SteamID64())
+    MySQLite.query([[UPDATE darkrp_player SET tlevel = ]] .. level .. [[ WHERE uid = ]] .. ply:UniqueID() .. [[ OR uid = ]] .. ply:SteamID64())
 end
 
-function DarkRP.storeOfflineWantedLevel(sid64, level)
+function DarkRP.storeOfflineThreatLevel(sid64, level)
     if isnumber(sid64) or isstring(sid64) and string.len(sid64) < 17 then -- smaller than 76561197960265728 is not a SteamID64
-        DarkRP.errorNoHalt([[Some addon is giving DarkRP.storeOfflineWantedLevel a UniqueID as its first argument, but this function now expects a SteamID64]], 2, {
+        DarkRP.errorNoHalt([[Some addon is giving DarkRP.storeOfflineThreatLevel a UniqueID as its first argument, but this function now expects a SteamID64]], 2, {
             "The function used to take UniqueIDs, but it does not anymore.",
             "If you are a server owner, please look closely to the files mentioned in this error",
             "After all, these files will tell you WHICH addon is doing it",
             "This is NOT a DarkRP bug!",
             "Your server will continue working normally",
-            "But whichever addon just tried to store an offline player's wanted level",
+            "But whichever addon just tried to store an offline player's threat level",
             "Will NOT take effect!"
         })
     end
 
     -- Also store on deprecated UniqueID
     local uniqueid = util.CRC("gm_" .. string.upper(util.SteamIDFrom64(sid64)) .. "_gm")
-    MySQLite.query([[UPDATE darkrp_player SET wlevel = ]] .. level .. [[ WHERE uid = ]] .. uniqueid .. [[ OR uid = ]] .. sid64)
+    MySQLite.query([[UPDATE darkrp_player SET tlevel = ]] .. level .. [[ WHERE uid = ]] .. uniqueid .. [[ OR uid = ]] .. sid64)
 end
 
-local function resetAllWantedLevel(ply, cmd, args)
+local function resetAllThreatLevel(ply, cmd, args)
     if ply:EntIndex() ~= 0 and not ply:IsSuperAdmin() then return end
-    MySQLite.query("UPDATE darkrp_player SET wlevel = " .. GAMEMODE.Config.defaultwantedlevel .. " ;")
+    MySQLite.query("UPDATE darkrp_player SET tlevel = " .. GAMEMODE.Config.defaultwantedlevel .. " ;")
     for _, v in ipairs(player.GetAll()) do
-        v:setDarkRPVar("wantedLevel", GAMEMODE.Config.defaultwantedlevel)
+        v:setDarkRPVar("threatLevel", GAMEMODE.Config.defaultwantedlevel)
     end
     if ply:IsPlayer() then
-        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_wantedlevel", ply:Nick()))
+        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_threatlevel", ply:Nick()))
     else
-        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_wantedlevel", "Console"))
+        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_threatlevel", "Console"))
     end
 end
-concommand.Add("rp_resetallwantedlevel", resetAllWantedLevel)
+concommand.Add("rp_resetallthreatlevel", resetAllThreatLevel)
 
 
 function DarkRP.storeSalary(ply, amount)
@@ -539,24 +539,24 @@ function meta:restorePlayerData()
 
         info.wallet = info.wallet or GAMEMODE.Config.startingmoney
         info.salary = DarkRP.retrieveSalary(self)
-        info.wlevel = info.wlevel or GAMEMODE.Config.defaultwantedlevel
+        info.tlevel = info.tlevel or GAMEMODE.Config.defaultthreatlevel
 
         self:setDarkRPVar("money", tonumber(info.wallet))
         self:setSelfDarkRPVar("salary", tonumber(info.salary))
-        self:setSelfDarkRPVar("wantedLevel", tonumber(info.wlevel))
+        self:setSelfDarkRPVar("threatLevel", tonumber(info.tlevel))
 
         self:setDarkRPVar("rpname", info.rpname)
 
         if not data then
             info = hook.Call("onPlayerFirstJoined", nil, self, info) or info
-            DarkRP.createPlayerData(self, info.rpname, info.wallet, info.salary, info.wlevel)
+            DarkRP.createPlayerData(self, info.rpname, info.wallet, info.salary, info.tlevel)
         end
     end, function(err) -- Retrieving data failed, go on without it
         if not IsValid(self) then return end
         self.DarkRPUnInitialized = true -- no information should be saved from here, or the playerdata might be reset
 
         self:setDarkRPVar("money", GAMEMODE.Config.startingmoney)
-        self:setDarkRPVar("wantedLevel", GAMEMODE.Config.defaultwantedlevel)
+        self:setDarkRPVar("threatLevel", GAMEMODE.Config.defaultthreatlevel)
         self:setSelfDarkRPVar("salary", DarkRP.retrieveSalary(self))
         local name = string.gsub(self:SteamName(), "\\\"", "\"")
         self:setDarkRPVar("rpname", name)

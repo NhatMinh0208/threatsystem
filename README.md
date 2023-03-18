@@ -1,5 +1,5 @@
-# DarkRP Wanted Levels
-Addon for DarkRP that adds wanted levels to players.
+# DarkRP Threat System
+Addon for DarkRP that adds a threat system.
 
 ## Installation
 First install the [DarkRP modification addon](https://github.com/FPtje/darkrpmodification).
