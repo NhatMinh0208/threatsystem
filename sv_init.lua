@@ -5,7 +5,7 @@ function plyMeta:setThreatLevel(level)
         self:setDarkRPVar("threatLevel", level)
         DarkRP.storeThreatLevel(self, level)
         -- implement threat level decay
-        if (level > 0)
+        if (level > 0) then
             timer.Remove(self:SteamID64() .. "threatdecay")
             timer.Create(self:SteamID64() .. "threatdecay", GAMEMODE.Config.threatdecaytime, 1, function()
                 self:setThreatLevel(level - 1)
