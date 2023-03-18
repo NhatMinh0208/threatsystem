@@ -312,7 +312,7 @@ function migrateDB(callback)
 
             MySQLite.queueQuery([[PRAGMA foreign_keys=ON]])
             MySQLite.queueQuery([[REPLACE INTO darkrp_dbversion VALUES(20230317)]])
-            MySQLite.commit(fp{migrate, 20230317})
+            MySQLite.commit(fp{migrate, 20230318})
             return
         end
 

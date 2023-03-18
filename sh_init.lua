@@ -4,6 +4,9 @@ function plyMeta:getThreatLevel()
     return self:getDarkRPVar("threatLevel")
 end
 
+function plyMeta:isThreat()
+    if self:getDarkRPVar("threatLevel") and self:getDarkRPVar("threatLevel")~=0 then return true else return false end
+end
 
 --[[---------------------------------------------------------------------------
 DarkRPVars

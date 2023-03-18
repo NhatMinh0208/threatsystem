@@ -98,6 +98,8 @@ local my_language = {
     wanted_revoked = "%s is no longer wanted by the Police.\nRevoked by: %s",
     cant_arrest_other_cp = "You cannot arrest other CPs!",
     must_be_wanted_for_arrest = "The player must be wanted in order to be able to arrest them.",
+    must_be_threat_for_arrest = "The player must be a threat in order to be able to arrest them.",
+    must_be_wanted_or_threat = "The player must be wanted or a threat in order to be able to arrest them.",
     cant_arrest_fadmin_jailed = "You cannot arrest a player who has been jailed by an admin.",
     cant_arrest_no_jail_pos = "You cannot arrest people since there are no jail positions set!",
     cant_arrest_spawning_players = "You cannot arrest players who are spawning.",
@@ -269,8 +271,8 @@ local my_language = {
 
     -- Notifies
 
-    threat_level_set = "Your threat level has been set to: %s"
-    threat_level_get = "Your threat level is: %s"
+    threat_level_set = "Your threat level has been set to: %s",
+    threat_level_get = "Your threat level is: %s",
 
     disabled = "%s has been disabled! %s",
     gm_spawnvehicle = "spawn vehicles",
@@ -356,6 +358,7 @@ local my_language = {
     x_cancelled_vote = "%s cancelled the last vote.",
     cant_cancel_vote = "Could not cancel the last vote as there was no last vote to cancel!",
     jail_punishment = "Punishment for disconnecting! Jailed for: %d seconds.",
+    jail_threatauto = "You have disconnected while being a threat! You are now jailed for %d seconds",
     admin_only = "Admin only!", -- When doing /addjailpos
     chief_or = "Chief or ",-- When doing /addjailpos
     frozen = "Frozen.",
