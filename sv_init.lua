@@ -1,8 +1,10 @@
 local plyMeta = FindMetaTable("Player")
 
 function plyMeta:setThreatLevel(level)
-    self:setDarkRPVar("threatLevel", level)
-    DarkRP.storeThreatLevel(self, level)
+    if not(level >= 0 and level <= GAMEMODE.Config.maxthreatlevel) then
+        self:setDarkRPVar("threatLevel", level)
+        DarkRP.storeThreatLevel(self, level)
+    end
 end
 
 --[[---------------------------------------------------------------------------

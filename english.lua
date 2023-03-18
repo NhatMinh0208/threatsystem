@@ -273,6 +273,7 @@ local my_language = {
 
     threat_level_set = "Your threat level has been set to: %s",
     threat_level_get = "Your threat level is: %s",
+    threat_level_increase = "Your threat level has been increased to: %s",
 
     disabled = "%s has been disabled! %s",
     gm_spawnvehicle = "spawn vehicles",

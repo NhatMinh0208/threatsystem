@@ -408,8 +408,8 @@ hook.Add("PlayerInitialSpawn", "threatAutoJail", function(ply)
     ply:restorePlayerData()
     if arrestedPlayers[ply:SteamID()] then return end
     if not ply:isThreat() then return end
-    if not GAMEMODE.Config.autojailthreat then return end
-    local time = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * ply:getThreatLevel() or 0
+    if not GAMEMODE.Config.jailthreatonlogin then return end
+    local time = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * (ply:getThreatLevel() or 0)
     -- Delay the actual jail by a single frame to allow
     -- the player to initialise
     timer.Simple(0, function()

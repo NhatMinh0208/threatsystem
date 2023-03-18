@@ -15,5 +15,7 @@ GM.Config.needwantedorthreat = false
 
 -- How much time (in seconds) should be added to jail time per threat level.
 GM.Config.additionaljailtime = 10
--- If true, automatically arrests the player if they log in while having a threat level.
-GM.Config.autoarrestthreat = true
+-- If true, automatically jails the player if they log in while having a threat level.
+GM.Config.jailthreatonlogin = true
+-- If true, automatically jails the player if they are killed.
+GM.Config.jailthreatondeath = true
