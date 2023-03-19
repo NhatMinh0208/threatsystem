@@ -5,7 +5,7 @@ Instructions:
 Add the translations below to the darkrp_language/english file.
 ---------------------------------------------------------------------------]]
 
-local my_language = {
+local theatsystem_en = {
     reset_threatlevel = "%s has reset all players' threat level!",
 
     must_be_threat_for_arrest = "The player must be a threat in order to be able to arrest them.",
@@ -18,3 +18,6 @@ local my_language = {
     
     jail_threatauto = "You have disconnected while being a threat! You are now jailed for %d seconds",
 }
+
+DarkRP.addLanguage("en", theatsystem_en)
+

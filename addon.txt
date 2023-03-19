@@ -1,0 +1,11 @@
+"AddonInfo"
+{
+    "name"              "DarkRP Threat System"
+    "version"           "0.14"
+    "up_date"           "03/19/23"
+    "author_name"       "NhatMinh0208"
+    "author_email"      ""
+    "author_url"        "https://github.com/NhatMinh0208"
+    "info"              "Addon for DarkRP that adds a threat system."
+    "override"          "0"
+}
