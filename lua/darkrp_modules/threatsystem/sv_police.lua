@@ -417,9 +417,9 @@ hook.Add("PlayerInitialSpawn", "threatAutoJail", function(ply)
     -- the player to initialise
     timer.Simple(0, function()
         -- In case the timer ended right this tick
-        if not IsValid(ply) or arrestedPlayers[ply:SteamID()] or not ply:isThreat() or not GAMEMODE.Config.autojailthreat then return end
+        if not IsValid(ply) or arrestedPlayers[ply:SteamID()] or not ply:isThreat() or not GAMEMODE.Config.jailthreatonlogin then return end
         ply:arrest(time)
         FAdmin.Log(ply:Nick() .. " auto-jailed for " .. tostring(time))
+        DarkRP.notify(ply, 0, 5, DarkRP.getPhrase("jail_threatauto", time))
     end)
-    DarkRP.notify(ply, 0, 5, DarkRP.getPhrase("jail_threatauto", time))
 end)

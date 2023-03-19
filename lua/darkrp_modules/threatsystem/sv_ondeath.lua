@@ -8,7 +8,7 @@ hook.Add( "PlayerDeath", "threatHandler", function( victim, inflictor, attacker 
             local level = attacker:getThreatLevel()
             attacker:setThreatLevel(level + 1)
             level = attacker:getThreatLevel()
-            DarkRP.notify(victim, 1, 5, DarkRP.getPhrase("threat_level_increase", level))
+            DarkRP.notify(attacker, 1, 5, DarkRP.getPhrase("threat_level_increase", level))
         end
     end
 end )

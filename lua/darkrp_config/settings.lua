@@ -19,3 +19,6 @@ GM.Config.additionaljailtime = 10
 GM.Config.jailthreatonlogin = true
 -- If true, automatically jails the player if they are killed while having a threat level.
 GM.Config.jailthreatondeath = true
+
+-- Whether to display threat level on top of player or not.
+GM.Config.showthreatlevel = true
