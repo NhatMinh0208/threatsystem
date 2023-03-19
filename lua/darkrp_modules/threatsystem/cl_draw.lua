@@ -84,7 +84,7 @@ Entity HUDPaint things
 -- Draw a player's name, health and/or job above the head
 -- This syntax allows for easy overriding
 function newDrawPlayerInfo(self)
-    print( "Hello world" )
+    -- print( "Hello world" )
 
     local pos = self:EyePos()
 
@@ -142,9 +142,9 @@ plyMeta.drawPlayerInfo = newDrawPlayerInfo
 local Scrw, Scrh, RelativeX, RelativeY
 
 local function DrawThreatLevel()
-    local threatLevel = localplayer:getDarkRPVar("threatLevel") or 0
-    threatLevelText = DarkRP.getPhrase("threatlevel", threatLevel)
-
+    local threatLevel = localplayer:getThreatLevel() or 0
+    threatLevelText = DarkRP.getPhrase("threatlevel", tostring(threatLevel))
+    -- print(threatLevelText)
     draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 45, ConVars.tlevel1, 0)
     draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 45, ConVars.tlevel2, 0)
 end

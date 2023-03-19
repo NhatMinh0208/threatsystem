@@ -556,7 +556,7 @@ function meta:restorePlayerData()
         self.DarkRPUnInitialized = true -- no information should be saved from here, or the playerdata might be reset
 
         self:setDarkRPVar("money", GAMEMODE.Config.startingmoney)
-        self:setDarkRPVar("threatLevel", GAMEMODE.Config.defaultthreatlevel)
+        self:setSelfDarkRPVar("threatLevel", GAMEMODE.Config.defaultthreatlevel)
         self:setSelfDarkRPVar("salary", DarkRP.retrieveSalary(self))
         local name = string.gsub(self:SteamName(), "\\\"", "\"")
         self:setDarkRPVar("rpname", name)
