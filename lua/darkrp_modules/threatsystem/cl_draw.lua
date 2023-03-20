@@ -132,7 +132,7 @@ function newDrawPlayerInfo(self)
         local susstring = DarkRP.getPhrase("suslevel", tostring(sus))
         draw.DrawNonParsedText(susstring, "DarkRPHUD2", pos.x + 1, pos.y + 81, colors.black, 1)
         draw.DrawNonParsedText(susstring, "DarkRPHUD2", pos.x, pos.y + 80, colors.white1, 1)
-        end
+        
     end
 
     if self:getDarkRPVar("HasGunlicense") then
