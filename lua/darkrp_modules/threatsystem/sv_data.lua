@@ -62,7 +62,8 @@ function DarkRP.initDatabase()
                 rpname VARCHAR(45),
                 salary INTEGER NOT NULL DEFAULT 45,
                 wallet BIGINT NOT NULL,
-                tlevel INTEGER NOT NULL DEFAULT 0
+                tlevel INTEGER NOT NULL DEFAULT 0,
+                sus FLOAT NOT NULL DEFAULT 100
             ) ]] .. ENGINE_INNODB .. [[;
         ]])
 
@@ -138,6 +139,7 @@ function DarkRP.initDatabase()
                         v:setSelfDarkRPVar("salary", Data.salary)
                         v:setDarkRPVar("money", Data.wallet)
                         v:setDarkRPVar("threatLevel", Data.tlevel)
+                        v:setDarkRPVar("susLevel", Data.sus)
                     end)
                 end
             end
@@ -311,8 +313,38 @@ function migrateDB(callback)
             MySQLite.queueQuery([[ALTER TABLE new_darkrp_player RENAME TO darkrp_player]])
 
             MySQLite.queueQuery([[PRAGMA foreign_keys=ON]])
-            MySQLite.queueQuery([[REPLACE INTO darkrp_dbversion VALUES(20230317)]])
+            MySQLite.queueQuery([[REPLACE INTO darkrp_dbversion VALUES(20230318)]])
             MySQLite.commit(fp{migrate, 20230318})
+            return
+        end
+
+        
+        
+        if version < 20230320 then
+            MySQLite.begin()
+            -- add the sus field
+            MySQLite.queueQuery([[PRAGMA foreign_keys=OFF]])
+
+            MySQLite.queueQuery([[
+                CREATE TABLE IF NOT EXISTS new_darkrp_player(
+                    uid BIGINT NOT NULL PRIMARY KEY,
+                    rpname VARCHAR(45),
+                    salary INTEGER NOT NULL DEFAULT 45,
+                    wallet BIGINT NOT NULL,
+                    tlevel INTEGER NOT NULL DEFAULT 0,
+                    sus FLOAT NOT NULL DEFAULT 0
+                );
+            ]])
+
+            MySQLite.queueQuery([[INSERT INTO new_darkrp_player SELECT * FROM darkrp_player]])
+
+            MySQLite.queueQuery([[DROP TABLE darkrp_player]])
+
+            MySQLite.queueQuery([[ALTER TABLE new_darkrp_player RENAME TO darkrp_player]])
+
+            MySQLite.queueQuery([[PRAGMA foreign_keys=ON]])
+            MySQLite.queueQuery([[REPLACE INTO darkrp_dbversion VALUES(20230320)]])
+            MySQLite.commit(fp{migrate, 20230320})
             return
         end
 
@@ -347,13 +379,13 @@ function DarkRP.offlinePlayerData(steamid, callback, failed)
     MySQLite.query(string.format([[REPLACE INTO playerinformation VALUES(%s, %s);]], MySQLite.SQLStr(sid64), MySQLite.SQLStr(steamid)), nil, failed)
 
     local query = [[
-    SELECT rpname, wallet, salary, tlevel, "SID64" AS kind
+    SELECT rpname, wallet, salary, tlevel, sus, "SID64" AS kind
     FROM darkrp_player
     where uid = %s
 
     UNION
 
-    SELECT rpname, wallet, salary, tlevel, "UniqueID" AS kind
+    SELECT rpname, wallet, salary, tlevel, sus, "UniqueID" AS kind
     FROM darkrp_player
     where uid = %s
     ;
@@ -369,7 +401,7 @@ function DarkRP.offlinePlayerData(steamid, callback, failed)
                 -- adding a new row with uid = SteamID64, but the same rpname will remove the uid=UniqueID row
 
                 local replquery = [[
-                REPLACE INTO darkrp_player(uid, rpname, wallet, salary, tlevel)
+                REPLACE INTO darkrp_player(uid, rpname, wallet, salary, tlevel, sus)
                 VALUES (%s, %s, %s, %s, %s)
                 ]]
 
@@ -380,7 +412,8 @@ function DarkRP.offlinePlayerData(steamid, callback, failed)
                         data[1].rpname == "NULL" and "NULL" or MySQLite.SQLStr(data[1].rpname),
                         data[1].wallet,
                         data[1].salary,
-                        data[1].tlevel
+                        data[1].tlevel,
+                        data[1].sus
                         ),
                     nil,
                     failed
@@ -406,13 +439,14 @@ function DarkRP.retrievePlayerData(ply, callback, failed, attempts, err)
     end)
 end
 
-function DarkRP.createPlayerData(ply, name, wallet, salary, tlevel)
+function DarkRP.createPlayerData(ply, name, wallet, salary, tlevel, sus)
     MySQLite.query([[REPLACE INTO darkrp_player VALUES(]] ..
             ply:SteamID64() .. [[, ]] ..
             MySQLite.SQLStr(name)  .. [[, ]] ..
             salary  .. [[, ]] ..
             wallet  .. [[, ]] ..
-            tlevel .. ");")
+            tlevel  .. [[, ]] ..
+            sus .. ");")
 
     -- Backwards compatibility
     MySQLite.query([[REPLACE INTO darkrp_player VALUES(]] ..
@@ -420,7 +454,8 @@ function DarkRP.createPlayerData(ply, name, wallet, salary, tlevel)
             MySQLite.SQLStr(name)  .. [[, ]] ..
             salary  .. [[, ]] ..
             wallet  .. [[, ]] ..
-            tlevel .. ");")
+            tlevel  .. [[, ]] ..
+            sus .. ");")
 end
 
 function DarkRP.storeMoney(ply, amount)
@@ -505,6 +540,49 @@ end
 concommand.Add("rp_resetallthreatlevel", resetAllThreatLevel)
 
 
+
+-- just gonna shamelessly reuse the above part for sus
+
+function DarkRP.storeSusLevel(ply, level)
+    if not isnumber(level) or level < 0 or level >= 1 / 0 then return end
+
+    -- Also keep deprecated UniqueID data at least somewhat up to date
+    MySQLite.query([[UPDATE darkrp_player SET sus = ]] .. level .. [[ WHERE uid = ]] .. ply:UniqueID() .. [[ OR uid = ]] .. ply:SteamID64())
+end
+
+function DarkRP.storeOfflineSus(sid64, level)
+    if isnumber(sid64) or isstring(sid64) and string.len(sid64) < 17 then -- smaller than 76561197960265728 is not a SteamID64
+        DarkRP.errorNoHalt([[Some addon is giving DarkRP.storeOfflineSus a UniqueID as its first argument, but this function now expects a SteamID64]], 2, {
+            "The function used to take UniqueIDs, but it does not anymore.",
+            "If you are a server owner, please look closely to the files mentioned in this error",
+            "After all, these files will tell you WHICH addon is doing it",
+            "This is NOT a DarkRP bug!",
+            "Your server will continue working normally",
+            "But whichever addon just tried to store an offline player's sus level",
+            "Will NOT take effect!"
+        })
+    end
+
+    -- Also store on deprecated UniqueID
+    local uniqueid = util.CRC("gm_" .. string.upper(util.SteamIDFrom64(sid64)) .. "_gm")
+    MySQLite.query([[UPDATE darkrp_player SET sus = ]] .. level .. [[ WHERE uid = ]] .. uniqueid .. [[ OR uid = ]] .. sid64)
+end
+
+local function resetAllSus(ply, cmd, args)
+    if ply:EntIndex() ~= 0 and not ply:IsSuperAdmin() then return end
+    MySQLite.query("UPDATE darkrp_player SET sus = " .. GAMEMODE.Config.defaultsuslevel .. " ;")
+    for _, v in ipairs(player.GetAll()) do
+        v:setDarkRPVar("susLevel", GAMEMODE.Config.defaultsuslevel)
+    end
+    if ply:IsPlayer() then
+        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_suslevel", ply:Nick()))
+    else
+        DarkRP.notifyAll(0, 4, DarkRP.getPhrase("reset_suslevel", "Console"))
+    end
+end
+concommand.Add("rp_resetallsus", resetAllSus)
+
+
 function DarkRP.storeSalary(ply, amount)
     ply:setSelfDarkRPVar("salary", math.floor(amount))
 
@@ -540,16 +618,18 @@ function meta:restorePlayerData()
         info.wallet = info.wallet or GAMEMODE.Config.startingmoney
         info.salary = DarkRP.retrieveSalary(self)
         info.tlevel = info.tlevel or GAMEMODE.Config.defaultthreatlevel
+        info.sus = info.sus or GAMEMODE.Config.defaultsuslevel
 
         self:setDarkRPVar("money", tonumber(info.wallet))
         self:setSelfDarkRPVar("salary", tonumber(info.salary))
         self:setSelfDarkRPVar("threatLevel", tonumber(info.tlevel))
+        self:setSelfDarkRPVar("susLevel", tonumber(info.sus))
 
         self:setDarkRPVar("rpname", info.rpname)
 
         if not data then
             info = hook.Call("onPlayerFirstJoined", nil, self, info) or info
-            DarkRP.createPlayerData(self, info.rpname, info.wallet, info.salary, info.tlevel)
+            DarkRP.createPlayerData(self, info.rpname, info.wallet, info.salary, info.tlevel, info.sus)
         end
     end, function(err) -- Retrieving data failed, go on without it
         if not IsValid(self) then return end
@@ -557,6 +637,7 @@ function meta:restorePlayerData()
 
         self:setDarkRPVar("money", GAMEMODE.Config.startingmoney)
         self:setSelfDarkRPVar("threatLevel", GAMEMODE.Config.defaultthreatlevel)
+        self:setSelfDarkRPVar("susLevel", GAMEMODE.Config.defaultsuslevel)
         self:setSelfDarkRPVar("salary", DarkRP.retrieveSalary(self))
         local name = string.gsub(self:SteamName(), "\\\"", "\"")
         self:setDarkRPVar("rpname", name)

@@ -22,3 +22,19 @@ GM.Config.jailthreatondeath = true
 
 -- Whether to display threat level on top of player or not.
 GM.Config.showthreatlevel = true
+
+
+--[[
+    Sus
+]]
+
+-- Enable/disbale sus. Enabling sus disables threatdecaytime and additionaljailtime.
+GM.Config.enablesus = true 
+-- Enable/disable displaying sus levels. (For debugging purposes)
+GM.Config.showsuslevel = true
+-- Default sus level, also the minimum sus level.
+GM.Config.defaultsuslevel = 100
+-- Sus level decreases by this much per second.
+GM.Config.susdecay = 0.1
+-- Sus level increases by this much per kill.
+GM.Config.susonkill = 30

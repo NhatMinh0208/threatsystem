@@ -12,13 +12,14 @@ local threatsystem_en = {
     must_be_wanted_or_threat = "The player must be wanted or a threat in order to be able to arrest them.",
     
     threat_level_set = "Your threat level has been set to: %s",
-    threat_level_get = "Your threat level is: %s",
+    sus_level_set = "Your sus level has been set to: %s",
     threat_level_increase = "Your threat level has been increased to: %s",
     threat_level_decrease = "Your threat level has been decreased to: %s",
     
     jail_threatauto = "You have disconnected while being a threat! You are now jailed for %d seconds",
 
-    threatlevel = "Threat level: %s"
+    threatlevel = "Threat level: %s",
+    suslevel = "Sus level: %s"
 }
 
 DarkRP.addLanguage("en", threatsystem_en)

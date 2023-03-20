@@ -5,6 +5,8 @@ hook.Add( "PlayerDeath", "threatHandler", function( victim, inflictor, attacker 
             victim:arrest(time)
             DarkRP.notify(victim, 1, 5, DarkRP.getPhrase("youre_arrested_threat"))
         elseif not victim:isThreat() then
+            local sus = attacker:getSusLevel()
+            attacker:setSusLevel(sus + GAMEMODE.Config.susonkill)
             local level = attacker:getThreatLevel()
             attacker:setThreatLevel(level + 1)
             level = attacker:getThreatLevel()

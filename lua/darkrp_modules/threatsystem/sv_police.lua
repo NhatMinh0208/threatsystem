@@ -94,7 +94,12 @@ function plyMeta:unWanted(actor)
 end
 
 function plyMeta:arrest(time, arrester)
-    calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * self:getThreatLevel()
+    local calculatedJailTime = 0
+    if (GAMEMODE.Config.enablesus) then
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + self:getSusLevel() * self:getThreatLevel()
+    else
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * self:getThreatLevel()
+    end
     time = time or calculatedJailTime
 
     hook.Call("playerArrested", DarkRP.hooks, self, time, arrester)
@@ -341,6 +346,7 @@ function DarkRP.hooks:playerArrested(ply, time, arrester)
     if ply:isWanted() then ply:unWanted(arrester) end
     
     timer.Remove(ply:SteamID64() .. "threatdecay")
+    timer.Remove(ply:SteamID64() .. "susdecay")
 
     local job = RPExtraTeams[ply:Team()]
     if not job or not job.hasLicense then
@@ -371,7 +377,10 @@ function DarkRP.hooks:playerArrested(ply, time, arrester)
 end
 
 function DarkRP.hooks:playerUnArrested(ply, actor)
+
     if ply:isThreat() then ply:setThreatLevel(0) end
+    ply:setSusLevel(ply:getSusLevel()) -- restart the sus decay
+
     if ply:InVehicle() then ply:ExitVehicle() end
 
     if ply.Sleeping then
@@ -395,7 +404,16 @@ end
 hook.Add("PlayerInitialSpawn", "Arrested", function(ply)
     ply:restorePlayerData()
     if not arrestedPlayers[ply:SteamID()] then return end
-    local time = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * ply:getThreatLevel() or 0
+
+    local calculatedJailTime = 0
+    local time = 0
+    if (GAMEMODE.Config.enablesus) then
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + self:getSusLevel() * self:getThreatLevel()
+    else
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * self:getThreatLevel()
+    end
+    time = time or calculatedJailTime
+
     -- Delay the actual arrest by a single frame to allow
     -- the player to initialise
     timer.Simple(0, function()
@@ -409,10 +427,22 @@ end)
 
 hook.Add("PlayerInitialSpawn", "threatAutoJail", function(ply)
     ply:restorePlayerData()
+    
+    ply:setSusLevel(ply:getSusLevel()) -- restart the sus decay
+
     if arrestedPlayers[ply:SteamID()] then return end
     if not ply:isThreat() then return end
     if not GAMEMODE.Config.jailthreatonlogin then return end
-    local time = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * (ply:getThreatLevel() or 0)
+
+    local calculatedJailTime = 0
+    local time = 0
+    if (GAMEMODE.Config.enablesus) then
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + self:getSusLevel() * self:getThreatLevel()
+    else
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * self:getThreatLevel()
+    end
+    time = time or calculatedJailTime
+
     -- Delay the actual jail by a single frame to allow
     -- the player to initialise
     timer.Simple(0, function()

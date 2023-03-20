@@ -49,7 +49,9 @@ local function ReloadConVars()
         salary1 = {0,150,0,200},
         salary2 = {0,0,0,255},
         tlevel1 = {150,0,0,200},
-        tlevel2 = {0,0,0,255}
+        tlevel2 = {0,0,0,255},
+        sus1 = {150,0,150,200},
+        sus2 = {0,0,0,255}
     }
 
     for name, Colour in pairs(ConVars) do
@@ -124,11 +126,19 @@ function newDrawPlayerInfo(self)
             draw.DrawNonParsedText(tlevelstring, "DarkRPHUD2", pos.x, pos.y + 60, colors.red, 1)
         end
     end
+    
+    if GAMEMODE.Config.showsuslevel then
+        local sus = self:getSusLevel() or 0
+        local susstring = DarkRP.getPhrase("suslevel", tostring(sus))
+        draw.DrawNonParsedText(susstring, "DarkRPHUD2", pos.x + 1, pos.y + 81, colors.black, 1)
+        draw.DrawNonParsedText(susstring, "DarkRPHUD2", pos.x, pos.y + 80, colors.white1, 1)
+        end
+    end
 
     if self:getDarkRPVar("HasGunlicense") then
         surface.SetMaterial(Page)
         surface.SetDrawColor(255,255,255,255)
-        surface.DrawTexturedRect(pos.x-16, pos.y + 80, 32, 32)
+        surface.DrawTexturedRect(pos.x-16, pos.y + 100, 32, 32)
     end
 end
 plyMeta.drawPlayerInfo = newDrawPlayerInfo
@@ -145,8 +155,17 @@ local function DrawThreatLevel()
     local threatLevel = localplayer:getThreatLevel() or 0
     threatLevelText = DarkRP.getPhrase("threatlevel", tostring(threatLevel))
     -- print(threatLevelText)
-    draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 45, ConVars.tlevel1, 0)
-    draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 45, ConVars.tlevel2, 0)
+    draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 85, ConVars.tlevel1, 0)
+    draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 85, ConVars.tlevel2, 0)
+end
+
+
+local function DrawSusLevel()
+    local susLevel = localplayer:getSusLevel() or 0
+    susLevelText = DarkRP.getPhrase("suslevel", tostring(susLevel))
+    -- print(threatLevelText)
+    draw.DrawNonParsedText(susLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 45, ConVars.sus1, 0)
+    draw.DrawNonParsedText(susLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 45, ConVars.sus2, 0)
 end
 
 local function DrawThreatSystemHud(gamemodeTable)
@@ -161,8 +180,13 @@ local function DrawThreatSystemHud(gamemodeTable)
     shouldDraw = shouldDraw ~= false
     if shouldDraw then
         --Background
-        draw.RoundedBox(6, 0, Scrh - HUDHeight - 45, HUDWidth, 40, ConVars.background)
-        DrawThreatLevel()
+        draw.RoundedBox(6, 0, Scrh - HUDHeight - 85, HUDWidth, 80, ConVars.background)
+        if GAMEMODE.Config.showthreatlevel then
+            DrawThreatLevel()
+        end
+        if GAMEMODE.Config.showsuslevel then
+            DrawSusLevel()
+        end
     end
 end
 
