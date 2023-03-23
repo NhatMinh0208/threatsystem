@@ -80,6 +80,9 @@ local function ReloadConVars()
 end
 ReloadConVars()
 
+
+local Page = Material("icon16/page_white_text.png")
+
 --[[---------------------------------------------------------------------------
 Entity HUDPaint things
 ---------------------------------------------------------------------------]]

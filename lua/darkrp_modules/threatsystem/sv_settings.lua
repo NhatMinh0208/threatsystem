@@ -11,7 +11,7 @@ GM.Config.threatdecaytime = 120
 -- If true, the player must be a threat in order to arrest them.
 GM.Config.needthreatforarrest = false
 -- If true, the player must be either wanted or a threat in order to arrest them. Overrides both needwantedforarrest and needthreatforarrest.
-GM.Config.needwantedorthreat = false
+GM.Config.needwantedorthreat = true
 
 -- How much time (in seconds) should be added to jail time per threat level.
 GM.Config.additionaljailtime = 10
