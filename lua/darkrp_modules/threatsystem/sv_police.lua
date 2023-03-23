@@ -437,9 +437,9 @@ hook.Add("PlayerInitialSpawn", "threatAutoJail", function(ply)
     local calculatedJailTime = 0
     local time = 0
     if (GAMEMODE.Config.enablesus) then
-        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + self:getSusLevel() * self:getThreatLevel()
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + ply:getSusLevel() * ply:getThreatLevel()
     else
-        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * self:getThreatLevel()
+        calculatedJailTime = (GAMEMODE.Config.jailtimer or 120) + (GAMEMODE.Config.additionaljailtime or 120) * ply:getThreatLevel()
     end
     time = time or calculatedJailTime
 

@@ -121,13 +121,19 @@ function newDrawPlayerInfo(self)
     if GAMEMODE.Config.showthreatlevel then
         local tlevel = self:getThreatLevel() or 0
         local tlevelstring = DarkRP.getPhrase("threatlevel", tostring(tlevel))
-        if (tlevel == 0) then
-            draw.DrawNonParsedText(tlevelstring, "DarkRPHUD2", pos.x + 1, pos.y + 61, colors.black, 1)
-            draw.DrawNonParsedText(tlevelstring, "DarkRPHUD2", pos.x, pos.y + 60, colors.white1, 1)
-        else
-            draw.DrawNonParsedText(tlevelstring, "DarkRPHUD2", pos.x + 1, pos.y + 61, colors.gray1, 1)
-            draw.DrawNonParsedText(tlevelstring, "DarkRPHUD2", pos.x, pos.y + 60, colors.red, 1)
+        
+        if (tlevel ~= 0) then
+            local initx = pos.x - 10 * (tlevel-1)
+            for i=1,sus do
+                surface.DrawPoly({
+                    { x = initx, y = pos.y + 60},
+                    { x = initx - 10, y = pos.y + 80},
+                    { x = initx + 10, y = pos.y + 80}
+                })
+            end
+            initx = initx + 20 
         end
+
     end
     
     if GAMEMODE.Config.showsuslevel then
@@ -135,7 +141,6 @@ function newDrawPlayerInfo(self)
         local susstring = DarkRP.getPhrase("suslevel", tostring(sus))
         draw.DrawNonParsedText(susstring, "DarkRPHUD2", pos.x + 1, pos.y + 81, colors.black, 1)
         draw.DrawNonParsedText(susstring, "DarkRPHUD2", pos.x, pos.y + 80, colors.white1, 1)
-        
     end
 
     if self:getDarkRPVar("HasGunlicense") then
