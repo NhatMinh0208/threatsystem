@@ -1,6 +1,7 @@
 --[[---------------------------------------------------------------------------
 Threat System module
 ---------------------------------------------------------------------------]]
+
 -- The default threat level.
 GM.Config.defaultthreatlevel = 0
 -- The maximum threat level.
@@ -31,7 +32,7 @@ GM.Config.showthreatlevel = true
 -- Enable/disbale sus. Enabling sus disables threatdecaytime and additionaljailtime.
 GM.Config.enablesus = true 
 -- Enable/disable displaying sus levels. (For debugging purposes)
-GM.Config.showsuslevel = true
+GM.Config.showsuslevel = false
 -- Default sus level, also the minimum sus level.
 GM.Config.defaultsuslevel = 100
 -- Sus level decreases by this much per second.

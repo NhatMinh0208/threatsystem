@@ -93,7 +93,7 @@ function newDrawPlayerInfo(self)
 
     local pos = self:EyePos()
 
-    pos.z = pos.z + 10 -- The position we want is a bit above the position of the eyes
+    pos.z = pos.z + 15 -- The position we want is a bit above the position of the eyes
     pos = pos:ToScreen()
     if not self:getDarkRPVar("wanted") then
         -- Move the text up a few pixels to compensate for the height of the text
@@ -122,16 +122,38 @@ function newDrawPlayerInfo(self)
         local tlevel = self:getThreatLevel() or 0
         local tlevelstring = DarkRP.getPhrase("threatlevel", tostring(tlevel))
         
+        
+        tlevel = 5
+
         if (tlevel ~= 0) then
-            local initx = pos.x - 10 * (tlevel-1)
-            for i=1,sus do
-                surface.DrawPoly({
+            local initx = pos.x - 15 * (tlevel-1)
+            for i=1,tlevel do
+                
+                
+                surface.SetDrawColor( 255, 234, 0, 255)
+                draw.NoTexture()
+                local star = {
                     { x = initx, y = pos.y + 60},
-                    { x = initx - 10, y = pos.y + 80},
-                    { x = initx + 10, y = pos.y + 80}
+                    { x = initx + 9, y = pos.y + 65},
+                    { x = initx + 9, y = pos.y + 75},
+                    { x = initx , y = pos.y + 80},
+                    { x = initx - 9, y = pos.y + 75},
+                    { x = initx - 9, y = pos.y + 65},
+                }
+                surface.DrawPoly({
+                    star[1],
+                    star[3],
+                    star[5]
                 })
+                
+                surface.DrawPoly({
+                    star[2],
+                    star[4],
+                    star[6]
+                })
+                print('draw')
+                initx = initx + 30
             end
-            initx = initx + 20 
         end
 
     end
@@ -162,7 +184,7 @@ local Scrw, Scrh, RelativeX, RelativeY
 local function DrawThreatLevel()
     local threatLevel = localplayer:getThreatLevel() or 0
     threatLevelText = DarkRP.getPhrase("threatlevel", tostring(threatLevel))
-    -- print(threatLevelText)
+    print(threatLevelText)
     draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 85, ConVars.tlevel1, 0)
     draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 85, ConVars.tlevel2, 0)
 end
@@ -171,7 +193,7 @@ end
 local function DrawSusLevel()
     local susLevel = localplayer:getSusLevel() or 0
     susLevelText = DarkRP.getPhrase("suslevel", tostring(susLevel))
-    -- print(threatLevelText)
+    print(susLevelText)
     draw.DrawNonParsedText(susLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 45, ConVars.sus1, 0)
     draw.DrawNonParsedText(susLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 45, ConVars.sus2, 0)
 end

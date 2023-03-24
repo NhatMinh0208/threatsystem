@@ -30,7 +30,7 @@ end
 
 function plyMeta:setSusLevel(level) 
     
-    FAdmin.Log(level)
+    -- FAdmin.Log(level)
 
     if (level == nil) then return end
     if (level >= GAMEMODE.Config.defaultsuslevel) then
