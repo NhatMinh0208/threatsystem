@@ -123,7 +123,7 @@ function newDrawPlayerInfo(self)
         local tlevelstring = DarkRP.getPhrase("threatlevel", tostring(tlevel))
         
         
-        tlevel = 5
+        -- tlevel = 5
 
         if (tlevel ~= 0) then
             local initx = pos.x - 15 * (tlevel-1)
