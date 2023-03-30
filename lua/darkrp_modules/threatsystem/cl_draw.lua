@@ -151,7 +151,7 @@ function newDrawPlayerInfo(self)
                     star[4],
                     star[6]
                 })
-                print('draw')
+                -- print('draw')
                 initx = initx + 30
             end
         end
@@ -184,7 +184,7 @@ local Scrw, Scrh, RelativeX, RelativeY
 local function DrawThreatLevel()
     local threatLevel = localplayer:getThreatLevel() or 0
     threatLevelText = DarkRP.getPhrase("threatlevel", tostring(threatLevel))
-    print(threatLevelText)
+    -- print(threatLevelText)
     draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 85, ConVars.tlevel1, 0)
     draw.DrawNonParsedText(threatLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 85, ConVars.tlevel2, 0)
 end
@@ -193,7 +193,7 @@ end
 local function DrawSusLevel()
     local susLevel = localplayer:getSusLevel() or 0
     susLevelText = DarkRP.getPhrase("suslevel", tostring(susLevel))
-    print(susLevelText)
+    -- print(susLevelText)
     draw.DrawNonParsedText(susLevelText, "DarkRPHUD2", RelativeX + 5, RelativeY - HUDHeight + 6 - 45, ConVars.sus1, 0)
     draw.DrawNonParsedText(susLevelText, "DarkRPHUD2", RelativeX + 4, RelativeY - HUDHeight + 5 - 45, ConVars.sus2, 0)
 end
